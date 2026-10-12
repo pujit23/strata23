@@ -27,6 +27,8 @@ jobs:
           python-version: '3.12'
       - name: Install Benchmark Dependencies
         run: pip install numpy httpx
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
       - name: Run JMH Core Distance Kernels
         run: ./gradlew :strata-core:jmh --no-daemon
       - name: Run Filter Selectivity Regression Check
