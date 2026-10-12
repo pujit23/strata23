@@ -1345,12 +1345,23 @@ Following the push to repository `pujit23/strata23`, three out of four GitHub Ac
 
 #### C. React 19 Console UI
 - **Failing Log Evidence:**
-  - Vitest failed to bind `@testing-library/jest-dom` matchers (`toBeInTheDocument`) when imported via standard Jest entrypoint in ES modules environment without global Jest runner.
-- **Modified Files:**
+  - On GitHub Actions `ubuntu-latest` runner (verified via live run inspection):
+    ```text
+    src/services/collectionService.ts:1:27 - error TS2307: Cannot find module '../lib/api' or its corresponding type declarations.
+    1 import { apiClient } from "../lib/api";
+    Error: Process completed with exit code 2.
+    ```
+- **Root Cause:**
+  - An overly broad unanchored rule `lib/` in `.gitignore` (intended for Python virtual environments) inadvertently ignored `console/src/lib/api.ts`. Consequently, while `api.ts` existed on the local disk, Git did not track it, causing GitHub Actions checkout to lack `console/src/lib/api.ts`.
+  - Secondary issue: `setup.ts` imported `@testing-library/jest-dom` targeting global Jest `expect` rather than Vitest's `expect`, and `vite.config.ts` lacked Vitest config type augmentation.
+- **Modified & Added Files:**
+  - `.gitignore`: Anchored virtualenv patterns to `/lib/` and `/lib64/`, and added explicit negative rule `!console/src/lib/`.
+  - `console/src/lib/api.ts`: Staged and committed the REST API client module with `x-tenant-id` header injection.
   - `console/tests/setup.ts`: Updated import to `@testing-library/jest-dom/vitest`.
   - `console/vite.config.ts`: Imported `defineConfig` from `vitest/config`.
   - `console/tsconfig.json`: Added `"types": ["vitest/globals", "@testing-library/jest-dom/vitest"]`.
 - **Verification Evidence:**
+  - TypeScript typecheck (`npm run typecheck` / `tsc --noEmit`) passes with 0 errors.
   - Vitest component tests pass cleanly (`App.test.tsx`: 1 test passed in 343ms).
   - Production bundle generated cleanly by Vite (`dist/assets/index-*.js`, `dist/assets/index-*.css`).
 
