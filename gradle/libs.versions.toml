@@ -1,0 +1,63 @@
+[versions]
+java = "25"
+grpc = "1.71.0"
+protobuf = "4.29.3"
+protovalidate = "0.7.0"
+junit = "5.11.4"
+jqwik = "1.9.2"
+jmh = "1.37"
+assertj = "3.27.3"
+slf4j = "2.0.16"
+logback = "1.5.16"
+picocli = "4.7.6"
+jackson = "2.18.2"
+
+# Gradle Plugins
+protobufPlugin = "0.9.4"
+jmhPlugin = "0.7.2"
+foojay = "0.9.0"
+
+[libraries]
+# gRPC
+grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-inprocess = { module = "io.grpc:grpc-inprocess", version.ref = "grpc" }
+grpc-testing = { module = "io.grpc:grpc-testing", version.ref = "grpc" }
+
+# Protobuf & Protovalidate
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protovalidate = { module = "build.buf:protovalidate", version.ref = "protovalidate" }
+annotation-api = { module = "javax.annotation:javax.annotation-api", version = "1.3.2" }
+
+# CLI
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
+
+# JSON Serialization for payloads
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+
+# Logging
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# Testing
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+jqwik = { module = "net.jqwik:jqwik", version.ref = "jqwik" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+# Benchmarking
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
+
+[bundles]
+grpc = ["grpc-netty-shaded", "grpc-protobuf", "grpc-stub"]
+testing = ["junit-jupiter", "jqwik", "assertj-core"]
+logging = ["slf4j-api", "logback-classic"]
+
+[plugins]
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+jmh = { id = "me.champeau.jmh", version.ref = "jmhPlugin" }
+foojay = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }

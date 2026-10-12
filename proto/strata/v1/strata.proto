@@ -1,0 +1,271 @@
+syntax = "proto3";
+
+package strata.v1;
+
+option java_multiple_files = true;
+option java_package = "tech.pujit.strata.engine.grpc.v1";
+option java_outer_classname = "StrataProto";
+
+// ==============================================================================
+// STRATA Engine Service Contract
+// Note: Tenant identity is NOT part of message bodies. Tenant identity must
+// be conveyed via trusted gRPC metadata (e.g. 'x-strata-tenant-id') as
+// enforced by the service layer security boundary.
+// ==============================================================================
+
+service StrataEngineService {
+  // Collection Management
+  rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse);
+  rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse);
+  rpc GetCollection(GetCollectionRequest) returns (GetCollectionResponse);
+  rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse);
+
+  // Data Plane Mutations
+  rpc UpsertPoints(UpsertPointsRequest) returns (UpsertPointsResponse);
+  rpc DeletePoints(DeletePointsRequest) returns (DeletePointsResponse);
+  rpc GetPoints(GetPointsRequest) returns (GetPointsResponse);
+
+  // Query & Vector Search
+  rpc Search(SearchRequest) returns (SearchResponse);
+
+  // Storage & Maintenance
+  rpc CreateSnapshot(CreateSnapshotRequest) returns (CreateSnapshotResponse);
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// ------------------------------------------------------------------------------
+// Enums
+// ------------------------------------------------------------------------------
+
+enum DistanceMetric {
+  DISTANCE_METRIC_UNSPECIFIED = 0;
+  DISTANCE_METRIC_COSINE = 1;
+  DISTANCE_METRIC_EUCLIDEAN = 2;
+  DISTANCE_METRIC_DOT_PRODUCT = 3;
+}
+
+enum IndexType {
+  INDEX_TYPE_UNSPECIFIED = 0;
+  INDEX_TYPE_FLAT = 1;
+  INDEX_TYPE_HNSW = 2;
+  INDEX_TYPE_IVF_PQ = 3;
+}
+
+enum FilterExecutionStrategy {
+  FILTER_STRATEGY_UNSPECIFIED = 0;
+  FILTER_STRATEGY_EXACT_SCAN = 1;
+  FILTER_STRATEGY_PRE_FILTER = 2;
+  FILTER_STRATEGY_POST_FILTER = 3;
+  FILTER_STRATEGY_ITERATIVE_INDEX = 4;
+}
+
+// ------------------------------------------------------------------------------
+// Schema & Collection Definitions
+// ------------------------------------------------------------------------------
+
+message HnswConfig {
+  uint32 m = 1;
+  uint32 ef_construction = 2;
+  uint32 ef_search = 3;
+}
+
+message IvfPqConfig {
+  uint32 nlist = 1;
+  uint32 nprobe = 2;
+  uint32 m_subvectors = 3;
+  uint32 k_subclusters = 4;
+}
+
+message CollectionConfig {
+  string name = 1;
+  uint32 dimension = 2;
+  DistanceMetric metric = 3;
+  IndexType index_type = 4;
+  HnswConfig hnsw_config = 5;
+  IvfPqConfig ivfpq_config = 6;
+  uint64 max_segment_size_bytes = 7;
+}
+
+message CollectionStats {
+  string name = 1;
+  uint64 point_count = 2;
+  uint64 segment_count = 3;
+  uint64 memory_bytes = 4;
+  uint64 disk_bytes = 5;
+  uint64 last_lsn = 6;
+}
+
+// ------------------------------------------------------------------------------
+// Points & Vectors
+// ------------------------------------------------------------------------------
+
+message Point {
+  string id = 1;
+  repeated float vector = 2;
+  string payload_json = 3;
+  uint64 version = 4;
+}
+
+message ScoredPoint {
+  string id = 1;
+  float score = 2;
+  repeated float vector = 3;
+  string payload_json = 4;
+  uint64 version = 5;
+}
+
+// ------------------------------------------------------------------------------
+// Filtering (Filter AST)
+// ------------------------------------------------------------------------------
+
+message Filter {
+  oneof expression {
+    AndFilter and_filter = 1;
+    OrFilter or_filter = 2;
+    NotFilter not_filter = 3;
+    FieldFilter field_filter = 4;
+  }
+}
+
+message AndFilter {
+  repeated Filter conditions = 1;
+}
+
+message OrFilter {
+  repeated Filter conditions = 1;
+}
+
+message NotFilter {
+  Filter condition = 1;
+}
+
+message FieldFilter {
+  string field = 1;
+  oneof match {
+    string string_equals = 2;
+    int64 int_equals = 3;
+    double double_equals = 4;
+    bool bool_equals = 5;
+    RangeFilter range = 6;
+    InListFilter in_list = 7;
+  }
+}
+
+message RangeFilter {
+  optional double gt = 1;
+  optional double gte = 2;
+  optional double lt = 3;
+  optional double lte = 4;
+}
+
+message InListFilter {
+  repeated string string_values = 1;
+  repeated int64 int_values = 2;
+}
+
+// ------------------------------------------------------------------------------
+// RPC Requests and Responses
+// ------------------------------------------------------------------------------
+
+message CreateCollectionRequest {
+  CollectionConfig config = 1;
+}
+
+message CreateCollectionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DropCollectionRequest {
+  string collection_name = 1;
+}
+
+message DropCollectionResponse {
+  bool success = 1;
+}
+
+message GetCollectionRequest {
+  string collection_name = 1;
+}
+
+message GetCollectionResponse {
+  CollectionConfig config = 1;
+  CollectionStats stats = 2;
+}
+
+message ListCollectionsRequest {
+}
+
+message ListCollectionsResponse {
+  repeated string collection_names = 1;
+}
+
+message UpsertPointsRequest {
+  string collection_name = 1;
+  repeated Point points = 2;
+}
+
+message UpsertPointsResponse {
+  uint64 committed_lsn = 1;
+  uint32 points_upserted = 2;
+}
+
+message DeletePointsRequest {
+  string collection_name = 1;
+  repeated string point_ids = 2;
+}
+
+message DeletePointsResponse {
+  uint64 committed_lsn = 1;
+  uint32 points_deleted = 2;
+}
+
+message GetPointsRequest {
+  string collection_name = 1;
+  repeated string point_ids = 2;
+  bool with_vectors = 3;
+  bool with_payload = 4;
+}
+
+message GetPointsResponse {
+  repeated Point points = 1;
+}
+
+message SearchRequest {
+  string collection_name = 1;
+  repeated float query_vector = 2;
+  uint32 top_k = 3;
+  Filter filter = 4;
+  optional uint32 ef_search = 5;
+  bool with_vectors = 6;
+  bool with_payload = 7;
+}
+
+message SearchResponse {
+  repeated ScoredPoint results = 1;
+  uint64 latency_nanos = 2;
+  FilterExecutionStrategy strategy_used = 3;
+}
+
+message CreateSnapshotRequest {
+  string collection_name = 1;
+}
+
+message CreateSnapshotResponse {
+  string snapshot_id = 1;
+  string snapshot_path = 2;
+  uint64 snapshot_lsn = 3;
+}
+
+message HealthCheckRequest {
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    SERVING_STATUS_UNKNOWN = 0;
+    SERVING_STATUS_SERVING = 1;
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
+  string version = 2;
+}

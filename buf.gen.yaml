@@ -1,0 +1,6 @@
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/java
+    out: strata-engine/build/generated/sources/buf/java
+  - remote: buf.build/grpc/java
+    out: strata-engine/build/generated/sources/buf/java

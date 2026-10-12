@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: STRATA Vector Database REST API
+  version: 3.0.0
+  description: HTTP API Gateway and Management Service for the STRATA Vector Engine.
+servers:
+  - url: http://localhost:8080
+    description: Local development service
+paths:
+  /health:
+    get:
+      summary: Service health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 3.0.0
+
+  /metrics:
+    get:
+      summary: Prometheus metrics endpoint
+      responses:
+        '200':
+          description: Prometheus metrics formatted text
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/collections:
+    get:
+      summary: List tenant collections
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of collection names
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collections:
+                    type: array
+                    items:
+                      type: string
+    post:
+      summary: Create collection
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - dimension
+                - metric
+              properties:
+                name:
+                  type: string
+                dimension:
+                  type: integer
+                metric:
+                  type: string
+                  enum: [COSINE, EUCLIDEAN, DOT_PRODUCT]
+      responses:
+        '201':
+          description: Collection created
+
+  /api/v1/collections/{name}/search:
+    post:
+      summary: Vector nearest-neighbor search with optional filter
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - vector
+                - topK
+              properties:
+                vector:
+                  type: array
+                  items:
+                    type: number
+                topK:
+                  type: integer
+                filter:
+                  type: object
+      responses:
+        '200':
+          description: Ranked search results
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

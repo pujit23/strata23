@@ -1,0 +1,101 @@
+name: strata
+
+services:
+  strata-engine:
+    build:
+      context: .
+      dockerfile: docker/engine/Dockerfile
+    container_name: strata-engine
+    ports:
+      - "50051:50051"
+    environment:
+      - STRATA_ENGINE_PORT=50051
+      - STRATA_ENGINE_DATA_DIR=/var/lib/strata
+    volumes:
+      - engine_data:/var/lib/strata
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7.0
+    container_name: strata-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=strata
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  strata-service:
+    build:
+      context: .
+      dockerfile: docker/service/Dockerfile
+    container_name: strata-service
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=8080
+      - SERVICE_HOST=0.0.0.0
+      - MONGODB_URI=mongodb://mongodb:27017/strata
+      - ENGINE_GRPC_HOST=strata-engine
+      - ENGINE_GRPC_PORT=50051
+    depends_on:
+      strata-engine:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  strata-console:
+    build:
+      context: .
+      dockerfile: docker/console/Dockerfile
+    container_name: strata-console
+    ports:
+      - "3000:80"
+    depends_on:
+      - strata-service
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: strata-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: strata-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  engine_data:
+  mongo_data:

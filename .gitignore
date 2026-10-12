@@ -1,0 +1,92 @@
+# Root & OS
+.DS_Store
+Thumbs.db
+*.log
+tmp/
+*.tmp
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE & Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.project
+.classpath
+.settings/
+*.sublime-*
+
+# Node.js / NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+service/dist/
+console/dist/
+service/coverage/
+console/coverage/
+.turbo/
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# Protobuf / Buf generated
+proto/gen/
+strata-*/build/generated/
+
+# Benchmarks data
+benchmarks/data/
+benchmarks/results/*.json
+benchmarks/results/*.csv
+!benchmarks/results/README.md
+
+# Storage Engine runtime data (wal, segments, snapshots)
+data/
+strata_data/
+*.wal
+*.seg
