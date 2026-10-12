@@ -13,7 +13,7 @@ STRATA is a from-scratch, single-node, filter-aware vector database engineered f
 2. **API Gateway & Metadata Service (Node.js LTS / TypeScript / Fastify)**:
    - Owns tenant authentication, API key validation, user identities, and rate limiting.
    - Connects to MongoDB for user credentials and API key metadata.
-   - Proxies authenticated requests to the engine over gRPC, injecting tenant identity via trusted metadata (`x-strata-tenant-id`).
+   - Proxies authenticated requests to the engine over gRPC, injecting tenant identity via trusted metadata (`x-tenant-id`).
 
 3. **Web Console (React 19 / TypeScript / Vite / Tailwind CSS 4)**:
    - Operator and developer interface for vector collections, query experimentation, index exploration, and benchmark monitoring.

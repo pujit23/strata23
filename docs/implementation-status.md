@@ -33,7 +33,7 @@ Status Labels:
 | **BM25 & Hybrid Search** | `strata-query` | **Scaffolded / Builds** | BM25 formula implemented/tested; RRF combiner planned for Phase 5. |
 | **Query Telemetry Trace** | `strata-query` | **Scaffolded / Builds** | Query trace records defined. |
 | **Engine gRPC Transport & Server** | `strata-engine` | **Scaffolded / Builds** | Server lifecycle and validation implemented; gRPC handlers planned for Phase 1. |
-| **Tenant Context Metadata Interceptor** | `strata-engine` | **Implemented / Builds** | gRPC interceptor extracting `x-strata-tenant-id` header metadata. |
+| **Tenant Context Metadata Interceptor** | `strata-engine` | **Implemented / Tested** | gRPC interceptor extracting `x-tenant-id` header metadata. |
 | **Engine Request Validator** | `strata-engine` | **Implemented / Tested** | Dimension and collection name validation tested. |
 | **Engine Diagnostic CLI** | `strata-cli` | **Scaffolded / Builds / Tested** | Picocli application tested for --help and --version. |
 | **REST API Gateway (Fastify)** | `service` | **Scaffolded / Builds / Tested** | Fastify routes, auth middleware, and error handling tested via Vitest. |

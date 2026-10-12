@@ -90,3 +90,4 @@ data/
 strata_data/
 *.wal
 *.seg
+.jqwik-database

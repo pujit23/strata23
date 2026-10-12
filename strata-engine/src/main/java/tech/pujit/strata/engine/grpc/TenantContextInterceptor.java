@@ -20,7 +20,7 @@ public class TenantContextInterceptor implements ServerInterceptor {
     private static final Logger log = LoggerFactory.getLogger(TenantContextInterceptor.class);
 
     public static final Metadata.Key<String> TENANT_HEADER_KEY =
-        Metadata.Key.of("x-strata-tenant-id", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key.of("x-tenant-id", Metadata.ASCII_STRING_MARSHALLER);
 
     public static final Context.Key<String> TENANT_CONTEXT_KEY =
         Context.key("strata.tenant.id");
@@ -40,8 +40,8 @@ public class TenantContextInterceptor implements ServerInterceptor {
 
         String tenantId = headers.get(TENANT_HEADER_KEY);
         if (tenantId == null || tenantId.isBlank()) {
-            log.warn("Rejected gRPC call {} without required x-strata-tenant-id metadata", methodName);
-            call.close(Status.UNAUTHENTICATED.withDescription("Missing x-strata-tenant-id header"), new Metadata());
+            log.warn("Rejected gRPC call {} without required x-tenant-id metadata", methodName);
+            call.close(Status.UNAUTHENTICATED.withDescription("Missing x-tenant-id header"), new Metadata());
             return new ServerCall.Listener<>() {};
         }
 

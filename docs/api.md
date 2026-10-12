@@ -26,5 +26,5 @@ STRATA separates its interface into two primary boundaries:
 
 - **Port**: `50051`
 - **Contract**: Defined in [`proto/strata/v1/strata.proto`](file:///c:/Users/user/OneDrive/Desktop/strata/proto/strata/v1/strata.proto).
-- **Tenant Context**: Transmitted exclusively via metadata header `x-strata-tenant-id`.
+- **Tenant Context**: Transmitted exclusively via metadata header `x-tenant-id`.
 - **Internal Authentication**: Shared internal bearer secret via metadata header `authorization`.

@@ -147,7 +147,7 @@ For an honest, comprehensive subsystem breakdown, see [`docs/implementation-stat
 - **Repository Architecture & Toolchain**: Multi-module Gradle build, Java 25 incubator flags, FFM native access, Buf configuration, Docker Compose, and CI workflows.
 - **SIMD Distance Kernels**: Java Vector API (`jdk.incubator.vector`) dot product, Euclidean distance, and cosine distance kernels with scalar fallback.
 - **Off-Heap Memory Allocator**: Java Foreign Function & Memory (FFM) `Arena`/`MemorySegment` resource wrapper.
-- **Metadata-Based Tenant Isolation**: gRPC `TenantContextInterceptor` strictly extracting `x-strata-tenant-id` header metadata.
+- **Metadata-Based Tenant Isolation**: gRPC `TenantContextInterceptor` strictly extracting `x-tenant-id` header metadata.
 - **REST Gateway & Auth Middleware**: Fastify HTTP server with Zod validation, API key middleware, domain error mapping, and Prometheus metrics.
 - **Console UI Scaffold**: React 19 + Tailwind CSS 4 application with Collections, Query Console, Index Explorer, and Benchmark Lab views.
 

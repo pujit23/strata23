@@ -46,7 +46,7 @@ class EngineClientManager implements EngineClientWrapper {
 
   public createMetadata(tenantId: string): grpc.Metadata {
     const meta = new grpc.Metadata();
-    meta.add("x-strata-tenant-id", tenantId);
+    meta.add("x-tenant-id", tenantId);
     meta.add("authorization", `Bearer ${config.INTERNAL_AUTH_TOKEN}`);
     return meta;
   }

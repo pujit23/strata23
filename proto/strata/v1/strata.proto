@@ -9,7 +9,7 @@ option java_outer_classname = "StrataProto";
 // ==============================================================================
 // STRATA Engine Service Contract
 // Note: Tenant identity is NOT part of message bodies. Tenant identity must
-// be conveyed via trusted gRPC metadata (e.g. 'x-strata-tenant-id') as
+// be conveyed via trusted gRPC metadata (e.g. 'x-tenant-id') as
 // enforced by the service layer security boundary.
 // ==============================================================================
 

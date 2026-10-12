@@ -44,6 +44,7 @@ subprojects {
         add("implementation", rootProject.libs.slf4j.api)
         add("testImplementation", rootProject.libs.bundles.testing)
         add("testRuntimeOnly", rootProject.libs.junit.jupiter.engine)
+        add("testRuntimeOnly", rootProject.libs.junit.platform.launcher)
         add("testRuntimeOnly", rootProject.libs.logback.classic)
     }
 }
