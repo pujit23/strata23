@@ -1,9 +1,10 @@
-# STRATA v3.0
+# STRATA v0.1.0
+> **Status:** 🚧 Early development. See [implementation status](docs/implementation-status.md) for what works today.
 
 > A from-scratch, single-node, filter-aware vector database engineered for extreme similarity query performance with high-selectivity metadata filtering.
 
-[![CI](https://github.com/strata/strata/actions/workflows/ci.yml/badge.svg)](https://github.com/strata/strata/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](STRATA_VERSION)
+[![CI](https://github.com/pujit23/strata23/actions/workflows/ci.yml/badge.svg)](https://github.com/pujit23/strata23/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](STRATA_VERSION)
 [![Java](https://img.shields.io/badge/Java-25%20(Vector%20API)-orange.svg)](https://openjdk.org/)
 [![Node](https://img.shields.io/badge/Node.js-22%20LTS-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-cyan.svg)](https://react.dev/)
