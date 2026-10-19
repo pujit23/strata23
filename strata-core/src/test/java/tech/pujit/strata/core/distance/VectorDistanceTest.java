@@ -22,11 +22,30 @@ class VectorDistanceTest {
     }
 
     @Test
-    @DisplayName("Euclidean distance between identical vectors is zero")
-    void testEuclideanDistanceIdentical() {
+    @DisplayName("Squared Euclidean distance between identical vectors is zero")
+    void testSquaredEuclideanIdentical() {
         float[] a = new float[]{1.5f, 2.5f, 3.5f, 4.5f};
-        float dist = VectorDistance.euclideanDistance(a, a);
+        float dist = VectorDistance.squaredEuclidean(a, a);
         assertThat(dist).isCloseTo(0.0f, offset(1e-5f));
+    }
+
+    @Test
+    @DisplayName("Squared Euclidean distance matches known value")
+    void testSquaredEuclideanKnownValue() {
+        float[] a = new float[]{0.0f, 0.0f};
+        float[] b = new float[]{3.0f, 4.0f};
+        float dist = VectorDistance.squaredEuclidean(a, b);
+        assertThat(dist).isEqualTo(25.0f);
+    }
+
+    @Test
+    @DisplayName("Compute with EUCLIDEAN delegates to squaredEuclidean")
+    void testComputeEuclideanDelegation() {
+        float[] a = new float[]{1.0f, 2.0f, 3.0f};
+        float[] b = new float[]{4.0f, 5.0f, 6.0f};
+        float computed = VectorDistance.compute(DistanceFunction.EUCLIDEAN, a, b);
+        float direct = VectorDistance.squaredEuclidean(a, b);
+        assertThat(computed).isEqualTo(direct);
     }
 
     @Test
