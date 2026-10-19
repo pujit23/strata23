@@ -48,7 +48,7 @@ public final class VectorDistance {
         for (; i < bound; i += SPECIES.length()) {
             FloatVector va = FloatVector.fromArray(SPECIES, a, i);
             FloatVector vb = FloatVector.fromArray(SPECIES, b, i);
-            vsum = va.fma(vb, vsum);
+            vsum = vsum.add(va.mul(vb));
         }
         sum += vsum.reduceLanes(VectorOperators.ADD);
 
