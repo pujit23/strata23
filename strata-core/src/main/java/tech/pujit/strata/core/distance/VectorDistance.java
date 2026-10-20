@@ -29,7 +29,7 @@ public final class VectorDistance {
         }
 
         return switch (function) {
-            case EUCLIDEAN -> euclideanDistance(a, b);
+            case EUCLIDEAN -> squaredEuclidean(a, b);
             case COSINE -> cosineDistance(a, b);
             case DOT_PRODUCT -> -dotProduct(a, b); // negative dot product for distance ranking
         };
@@ -48,7 +48,7 @@ public final class VectorDistance {
         for (; i < bound; i += SPECIES.length()) {
             FloatVector va = FloatVector.fromArray(SPECIES, a, i);
             FloatVector vb = FloatVector.fromArray(SPECIES, b, i);
-            vsum = va.fma(vb, vsum);
+            vsum = vsum.add(va.mul(vb));
         }
         sum += vsum.reduceLanes(VectorOperators.ADD);
 
@@ -60,9 +60,9 @@ public final class VectorDistance {
     }
 
     /**
-     * Squared Euclidean distance between vectors {@code a} and {@code b}.
+     * Squared Euclidean distance. Callers apply sqrt when the true distance is needed.
      */
-    public static float euclideanDistance(float[] a, float[] b) {
+    public static float squaredEuclidean(float[] a, float[] b) {
         int i = 0;
         float sum = 0.0f;
         int length = a.length;
@@ -82,7 +82,7 @@ public final class VectorDistance {
             float diff = a[i] - b[i];
             sum += diff * diff;
         }
-        return (float) Math.sqrt(sum);
+        return sum;
     }
 
     /**

@@ -110,7 +110,7 @@ npm test
 npm run dev
 ```
 
-### C. React 19 Console UI
+### C. React 19 Console UI (Web Frontend)
 
 ```bash
 cd console
@@ -124,11 +124,21 @@ npm run typecheck
 # Run component tests (Vitest + Testing Library)
 npm test
 
-# Start local Vite development server
+# Start local Vite development server (default: http://localhost:3000)
 npm run dev
 ```
 
-### D. Full Local Development Stack (Docker Compose)
+### D. Operational Diagnostics CLI
+
+```bash
+# Display CLI diagnostic options and subcommands
+./gradlew :strata-cli:run --args="--help"
+
+# Connect to target engine instance
+./gradlew :strata-cli:run --args="--host 127.0.0.1 --port 50051"
+```
+
+### E. Full Local Development Stack (Docker Compose)
 
 ```bash
 # Spin up engine, service gateway, console, MongoDB, Prometheus, and Grafana
@@ -144,16 +154,24 @@ docker compose ps
 
 For an honest, comprehensive subsystem breakdown, see [`docs/implementation-status.md`](file:///c:/Users/user/OneDrive/Desktop/strata/docs/implementation-status.md).
 
-### Currently Implemented & Tested
-- **Repository Architecture & Toolchain**: Multi-module Gradle build, Java 25 incubator flags, FFM native access, Buf configuration, Docker Compose, and CI workflows.
-- **SIMD Distance Kernels**: Java Vector API (`jdk.incubator.vector`) dot product, Euclidean distance, and cosine distance kernels with scalar fallback.
+### Currently Implemented & Tested (Phase 1, Part A)
+- **SIMD Distance Kernels (`strata-core`)**: Java Vector API (`jdk.incubator.vector`) hardware-accelerated kernels for squared Euclidean distance (`squaredEuclidean`), negated dot product (`dotProduct`), and cosine distance (`cosineDistance`) with automatic lane reduction and scalar tail processing.
+- **Scalar Reference Implementation (`ScalarDistance`)**: Independent, plain left-to-right float reference kernels without Vector API dependencies used to validate SIMD accuracy.
+- **Differential & Property Testing**:
+  - `ScalarDifferentialTest`: 82 tests comparing SIMD vs. scalar reference across 13 dimensions (`1, 2, 3, 7, 8, 15, 16, 17, 33, 100, 128, 768, 1000`), 3 distance functions, and 2 numeric value ranges (`[-1, 1]` and `[-1000, 1000]`) with relative tolerance $\le 10^{-4}$.
+  - `DistancePropertiesTest`: jqwik property-based verification of metric symmetry, self-distance zero, and non-negativity.
+- **Exact Flat Index (`FlatIndex`)**: Dynamic on-heap array storage (`long[]`, `float[][]`) with slot-mapped point ID upserts, defensive vector cloning, bounded max-heap top-$k$ nearest neighbor retrieval, and idempotent resource release.
+- **Oracle Verification (`FlatIndexTest`)**: 19 tests verifying `FlatIndex` results against an independent brute-force oracle across 2,000 vectors, 50 queries, and top-10 retrieval (with contiguous and non-contiguous ID distributions).
+- **Result Ordering (`SearchResult`)**: Natural ordering sorted ascending by distance score (`lower = closer`), tie-breaking deterministically by ascending `pointId`.
+- **Repository Architecture & Toolchain**: Multi-module Gradle build, Java 25 incubator flags, FFM native access, Protocol Buffers & gRPC code generation, Docker Compose, and CI workflows.
 - **Off-Heap Memory Allocator**: Java Foreign Function & Memory (FFM) `Arena`/`MemorySegment` resource wrapper.
 - **Metadata-Based Tenant Isolation**: gRPC `TenantContextInterceptor` strictly extracting `x-tenant-id` header metadata.
 - **REST Gateway & Auth Middleware**: Fastify HTTP server with Zod validation, API key middleware, domain error mapping, and Prometheus metrics.
-- **Console UI Scaffold**: React 19 + Tailwind CSS 4 application with Collections, Query Console, Index Explorer, and Benchmark Lab views.
+- **Console UI (`console`)**: React 19 + Tailwind CSS 4 web frontend with Collections, Query Console, 3D Index Explorer, and Benchmark Lab views.
 
-### Planned for Phase 1 Vertical Slice
-- `CreateCollection` → `UpsertPoints` → `ExactSearch` → `DeletePoints` end-to-end flow.
-- Append-only WAL file writing and checksum validation.
-- Flat exact index vector storage and brute-force oracle verification.
-- Replay-based crash recovery tests.
+### Planned for Phase 1, Part B & Subsequent Phases
+- **Phase 1b**: Recall@$k$ evaluation harness, JMH microbenchmarks for SIMD vs. scalar at dim 768, off-heap `MemorySegment` storage for `FlatIndex`, runtime Vector API availability detection with automatic scalar fallback, and NumPy cross-check.
+- **Phase 2**: Append-only Write-Ahead Log (WAL), sealed immutable segments, tombstones, and crash recovery replay.
+- **Phase 3**: Approximate Nearest Neighbor (ANN) index implementations (HNSW graph index and IVF-PQ quantized index).
+- **Phase 4**: Filter evaluator and cost-based query planner (pre-filtering, post-filtering, iterative index search).
+- **Phase 5**: Hybrid search combiner (Reciprocal Rank Fusion with BM25) and gRPC search endpoints.

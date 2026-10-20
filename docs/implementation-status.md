@@ -16,9 +16,9 @@ Status Labels:
 | Subsystem / Component | Architectural Layer | Status | Notes / Next Action |
 | :--- | :--- | :--- | :--- |
 | **Project Skeleton & Toolchains** | Root | **Tested** | Gradle multi-module, Java 25 flags, Fastify, React 19, Buf, Compose configured. |
-| **Vector Distance Kernels** | `strata-core` | **Implemented / Tested** | Vector API SIMD dotProduct, euclidean, cosine with scalar fallback. Tested via JUnit 5. |
+| **Vector Distance Kernels** | `strata-core` | **Implemented / Tested** | Squared L2, IP, cosine. SIMD verified against scalar reference (relative tol 1e-4). JMH benchmark pending. |
 | **Off-Heap FFM Memory Manager** | `strata-core` | **Implemented / Tested** | Arena/MemorySegment zero-copy wrapper. Tested via JUnit 5. |
-| **Flat Index (Exact Oracle)** | `strata-core` | **Scaffolded / Builds** | Scaffolded interface; Phase 1 target for oracle recall comparison. |
+| **Flat Index (Exact Oracle)** | `strata-core` | **Implemented / Tested** | Brute-force exact search over on-heap float[] storage, verified against an oracle. Off-heap storage and recall@k utility pending. |
 | **HNSW Index** | `strata-core` | **Scaffolded / Builds** | Layered graph structure planned for Phase 2. |
 | **IVF-PQ Index** | `strata-core` | **Scaffolded / Builds** | Centroid quantization and inverted list scan planned for Phase 3. |
 | **Product Quantizer** | `strata-core` | **Scaffolded / Builds** | Codebook training and asymmetric distance table planned for Phase 3. |
