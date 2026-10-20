@@ -1,4 +1,4 @@
-# STRATA v0.1.0 (Early stage)
+# STRATA v0.1.0 (Early stage at phase 1)
 > **Status:** 🚧 Early development. See [implementation status](docs/implementation-status.md) for what works today.
 
 > A from-scratch, single-node, filter-aware vector database engineered for extreme similarity query performance with high-selectivity metadata filtering.
